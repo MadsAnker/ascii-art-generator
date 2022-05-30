@@ -1,6 +1,6 @@
-module Lib
-    ( someFunc
-    ) where
+module Lib (
+    writeAsciiImage
+) where
 
 import           Codec.Picture        (DynamicImage (ImageRGB8),
                                        Image (imageData, imageHeight, imageWidth),
@@ -15,23 +15,12 @@ import qualified Data.Vector.Storable as Vector
 import           Data.Word            (Word8)
 import           System.Environment   (getArgs)
 
-someFunc :: IO ()
-someFunc = do
-    args <- getArgs
-    case parseArgs args of
-      Just imagePath -> writeAsciiImage imagePath
-      Nothing        -> putStrLn "Usage:"
-
 writeAsciiImage :: String -> IO ()
 writeAsciiImage imagePath = do
     imageRead <- readImage imagePath
     putStrLn (case imageRead of
         Left e      -> e
         Right image -> convertToAsciiArt image)
-
-parseArgs :: [String] -> Maybe String
-parseArgs [x] = Just x
-parseArgs _   = Nothing
 
 convertToAsciiArt :: DynamicImage -> String
 convertToAsciiArt dynImage = intercalate "\n" (chunksOf width (Vector.foldr (:) [] charImageData))
